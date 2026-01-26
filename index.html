@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Submit Your Query</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #6366f1, #9333ea);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+
+.card {
+  background: white;
+  width: 100%;
+  max-width: 450px;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 18px;
+  color: #4f46e5;
+}
+
+input, textarea, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+button {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background: #4338ca;
+}
+
+.status {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #333;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Send Your Query</h2>
+
+  <form id="myForm">
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="email" name="email" placeholder="Your Email" required>
+    <textarea name="query" placeholder="Write your query..." required></textarea>
+    <input type="file" id="file" multiple required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+document.getElementById("myForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const status = document.getElementById("status");
+  const files = Array.from(document.getElementById("file").files);
+
+  if (files.length === 0) {
+    alert("Select at least one file");
+    return;
+  }
+
+  let totalSize = files.reduce((sum, f) => sum + f.size, 0);
+  if (totalSize > 25 * 1024 * 1024) {
+    alert("Total file size must be under 25 MB");
+    return;
+  }
+
+  status.innerText = "Uploading… ⏳";
+
+  let fileData = [];
+  let count = 0;
+
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function() {
+      fileData.push({
+        name: file.name,
+        type: file.type,
+        data: reader.result.split(",")[1]
+      });
+      count++;
+      if (count === files.length) submitForm(fileData);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function submitForm(fileData) {
+    const data = new URLSearchParams();
+    data.append("name", e.target.name.value);
+    data.append("email", e.target.email.value);
+    data.append("query", e.target.query.value);
+    data.append("files", JSON.stringify(fileData));
+
+    fetch("https://script.google.com/macros/s/AKfycbyRhEQBP0GJfhMD2IMRxQukH5Oyp1RvkHtSWQEnZA-gEPozCYSc60Zg42iBE761gnDqMw/exec", {
+      method: "POST",
+      body: data
+    })
+    .then(() => {
+      status.innerText = "✅ Submitted successfully!";
+      e.target.reset();
+    })
+    .catch(() => {
+      status.innerText = "❌ Submission failed";
+    });
+  }
+});
+</script>
+
+</body>
+</html>
