@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Submit Your Query</title>
+<title>Submit Your Files</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -69,7 +69,7 @@ button:hover {
 <body>
 
 <div class="card">
-  <h2>Send Your Query</h2>
+  <h2>Send Your files</h2>
 
   <form id="myForm">
     <input type="text" name="name" placeholder="Your Name" required>
@@ -95,8 +95,8 @@ document.getElementById("myForm").addEventListener("submit", function(e) {
   }
 
   let totalSize = files.reduce((sum, f) => sum + f.size, 0);
-  if (totalSize > 25 * 1024 * 1024) {
-    alert("Total file size must be under 25 MB");
+  if (totalSize > 125 * 1024 * 1024) {
+    alert("Total file size must be under 125 MB");
     return;
   }
 
